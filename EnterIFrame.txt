@@ -1,0 +1,44 @@
+        public static void EnterIFrame(IWebDriver Driver, By Element)
+        {
+		// Select the Xpath of the DOM HTML Tag that contains the target Xpath, this will parse to iFrame and parse proper container then
+		// Direct Automation inside iFrame
+
+            var targetiFrame = (String)((IJavaScriptExecutor)Driver).ExecuteScript("return arguments[0].innerHTML;", Driver.FindElement(Element));
+
+            const string pattern = "(<iframe.*>)(.*)(<\\/iframe>)";
+
+            MatchCollection matches = Regex.Matches(targetiFrame, pattern);
+            //Console.Write("\n" + "iFrames Found: " + matches.Count);
+
+            var regex = new Regex("(<iframe.*>)(.*)(<\\/iframe>)");
+            var regex2 = new Regex("id=(.*?)\" ");
+            var regex3 = new Regex(("\".*?\""));
+            //var regexBeta = new Regex("(<iframe.*id=(.*?).*>)");
+
+            //var sv = regexBeta.Match(firstiFrame);
+            var v = regex.Match(targetiFrame);
+            var s = v.ToString();
+            var v2 = regex2.Match(s);
+            var s2 = v2.ToString();
+            var v3 = regex3.Match(s2);
+            var s3 = v3.ToString();
+            var vResult = Regex.Replace(s3, "\"", "");
+            //Console.Write("\n" + "iFrames Tag: " + "\n" + s);
+            Console.Write("\n" + "iFrame id: " + vResult);
+            //Console.Write("\n\n" + "iFrames regex test: " + "\n" + sv);
+
+
+            var currentWindow = Driver.CurrentWindowHandle;
+            // Switch to current frame 
+            Driver.SwitchTo().Window(currentWindow);
+            // This should switch the ddriver to the top most window of the page
+            //driver.SwitchTo().DefaultContent();
+
+            // find the outer frame and use switch to frame method
+            IWebElement containerFrame = Driver.FindElement(By.Id(vResult));
+            Driver.SwitchTo().Frame(containerFrame);
+
+            // Should be in iframe at this point
+            // find content in frame with this below
+            Console.Write("\n" + "Should be in iFrame\n");
+        }
